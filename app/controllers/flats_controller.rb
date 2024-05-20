@@ -4,10 +4,15 @@ class FlatsController < ApplicationController
   end
 
   def create
-    @flat = Flat.new(flat_params)
-    @flat.user = current_user
-      
-    redirect_to root_path
+    @flat = current_user.flats.new(flat_params)
+
+    if @flat.save
+      redirect_to root_path
+    else
+      render :new, status: :unprocessable_entity
+    end
+  rescue ActiveRecord::RecordNotFound
+    render :new, status: :not_found
   end
 
   def flat_params
